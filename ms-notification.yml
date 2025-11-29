@@ -13,14 +13,14 @@ spring:
       port: ${SPRING_DATA_MONGODB_PORT:27017}
       database: ${SPRING_DATA_MONGODB_DATABASE:notification-db}
 
+  banner:
+    location: classpath:banner-ms-notification.txt
+
   rabbitmq:
     host: 127.0.0.1
     port: 5672
     username: guest
     password: "{cipher}6636f5d622aea7a10361bdccffbd6f1698889c1e564f1d1a65b78776e894b527"
-
-  banner:
-    location: classpath:banner-ms-notification.txt
 
 spring.cloud.function.definition: messageProcessor
 
@@ -55,6 +55,7 @@ logging:
     '[bo.edu.ucb.microservices]': DEBUG
     '[org.springframework.data.mongodb.core.ReactiveMongoTemplate]': DEBUG
 
+# ==================== Perfiles ====================
 ---
 spring.config.activate.on-profile: docker
 server.port: 8080
