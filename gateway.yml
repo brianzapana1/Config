@@ -103,6 +103,8 @@ management:
     gateway:
       enabled: true
     health:
+      healthcheckMicroservices:
+        enabled: false
       show-details: ALWAYS
   endpoints:
     web:
