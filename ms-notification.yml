@@ -61,7 +61,7 @@ logging:
 spring.config.activate.on-profile: docker
 server.port: 8080
 spring.data.mongodb.host: mongodb
-# ❌ No sobrescribas rabbitmq.password aquí, deja que tome la default
+# ❌ NO sobrescribas rabbitmq.password aquí, deja que tome el valor default cifrado
 
 # ======================= PROFILE: streaming_partitioned =======================
 ---
