@@ -1,19 +1,24 @@
-server.port: 8443
-server.ssl:
-  key-store-type: PKCS12
-  key-store: classpath:keystore/edge.p12
-  key-store-password: password
-  key-alias: localhost
-spring.application.name: gateway
+server:
+  port: 8443
+  ssl:
+    key-store-type: PKCS12
+    key-store: classpath:keystore/edge.p12
+    key-store-password: password
+    key-alias: localhost
+
+app:
+  eureka-server: localhost
+
 spring:
+  application:
+    name: gateway
+
   cloud:
     gateway:
       default-filters:
         - TokenRelay
       routes:
-        # ======================
-        # MS-NOTIFICATION
-        # ======================
+
         - id: ms-notification
           uri: lb://MS-NOTIFICATION
           predicates:
@@ -21,7 +26,6 @@ spring:
           filters:
             - StripPrefix=1
 
-        # OpenAPI JSON con prefijo /openapi/ms-notification/...
         - id: ms-notification-openapi-docs-prefixed
           uri: lb://MS-NOTIFICATION
           predicates:
@@ -29,7 +33,6 @@ spring:
           filters:
             - RewritePath=/openapi/ms-notification/v3/api-docs(?<segment>/?.*), /openapi/v3/api-docs${segment}
 
-        # Swagger UI con prefijo /openapi/ms-notification/swagger-ui/**
         - id: ms-notification-swagger-static-prefixed
           uri: lb://MS-NOTIFICATION
           predicates:
@@ -37,9 +40,6 @@ spring:
           filters:
             - RewritePath=/openapi/ms-notification/swagger-ui/(?<segment>.*), /openapi/swagger-ui/${segment}
 
-        # ======================
-        # MS-REGISTRATION (ejemplo para agregar otros microservicios: copia esta sección y cambia el nombre/id/uri/path)
-        # ======================
         - id: ms-registration
           uri: lb://MS-REGISTRATION
           predicates:
@@ -47,7 +47,6 @@ spring:
           filters:
             - StripPrefix=1
 
-        # Swagger UI con prefijo /openapi/ms-registration/swagger-ui/** (ejemplo para agregar Swagger/OpenAPI a otros microservicios: copia y cambia el nombre/path)
         - id: ms-registration-swagger-static-prefixed
           uri: lb://MS-REGISTRATION
           predicates:
@@ -55,7 +54,6 @@ spring:
           filters:
             - RewritePath=/openapi/ms-registration/swagger-ui/(?<segment>.*), /openapi/swagger-ui/${segment}
 
-        # OpenAPI JSON con prefijo /openapi/ms-registration/... (ejemplo para agregar OpenAPI a otros microservicios: copia y cambia el nombre/path)
         - id: ms-registration-openapi-docs-prefixed
           uri: lb://MS-REGISTRATION
           predicates:
@@ -63,9 +61,6 @@ spring:
           filters:
             - RewritePath=/openapi/ms-registration/v3/api-docs(?<segment>/?.*), /openapi/v3/api-docs${segment}
 
-        # ======================
-        # EUREKA WEB (ejemplo para agregar rutas a Eureka u otros servicios internos)
-        # ======================
         - id: eureka-web-start
           uri: http://${app.eureka-server}:8761
           predicates:
@@ -78,25 +73,27 @@ spring:
           predicates:
             - Path=/eureka/**
 
-        # ======================
-        # CONFIG SERVER (ejemplo para agregar ruta al config server, si necesitas exponerlo)
-        # ======================
         - id: config-server
           uri: ${spring.cloud.config.uri}
           predicates:
             - Path=/config/**
           filters:
-            - RewritePath=/config/(?<segment>.*),/$\{segment}
+            - RewritePath=/config/(?<segment>.*), /${segment}
 
   security:
     oauth2:
       resourceserver:
         jwt:
-          issuer-uri: http://keycloak.ucb.edu.bo:8081/realms/DemoUCB   # ← adaptado a tu puerto 8081
+          issuer-uri: http://keycloak.ucb.edu.bo:8081/realms/DemoUCB
 
-management.endpoint.gateway.enabled: true
-management.endpoint.health.show-details: "ALWAYS"
-management.endpoints.web.exposure.include: "*"
+management:
+  endpoint:
+    gateway:
+      enabled: true
+  endpoints:
+    web:
+      exposure:
+        include: "*"
 
 logging:
   level:
