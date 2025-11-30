@@ -4,9 +4,9 @@ server:
     enabled: true
     key-store: file:/keystore/edge-test.p12
     key-store-password: password
-    key-store-type: PKCS12          # ← solo una vez
+    key-store-type: PKCS12
     key-alias: edge-test
-    key-password: password          # ← recomendado tenerla
+    key-password: password
     trust-store: file:/keystore/edge-test.p12
     trust-store-password: password
     trust-store-type: PKCS12
@@ -20,30 +20,6 @@ spring:
         - TokenRelay
       routes:
         # ======================
-        # MS-NOTIFICATION
-        # ======================
-        - id: ms-notification
-          uri: lb://MS-NOTIFICATION
-          predicates:
-            - Path=/ms-notification/**
-          filters:
-            - StripPrefix=1
-
-        - id: ms-notification-openapi-docs-prefixed
-          uri: lb://MS-NOTIFICATION
-          predicates:
-            - Path=/openapi/ms-notification/v3/api-docs/**
-          filters:
-            - RewritePath=/openapi/ms-notification/v3/api-docs(?<segment>/?.*), /openapi/v3/api-docs${segment}
-
-        - id: ms-notification-swagger-static-prefixed
-          uri: lb://MS-NOTIFICATION
-          predicates:
-            - Path=/openapi/ms-notification/swagger-ui/**
-          filters:
-            - RewritePath=/openapi/ms-notification/swagger-ui/(?<segment>.*), /openapi/swagger-ui/${segment}
-
-        # ======================
         # MS-REGISTRATION
         # ======================
         - id: ms-registration
@@ -53,22 +29,97 @@ spring:
           filters:
             - StripPrefix=1
 
-        - id: ms-registration-swagger-static-prefixed
+        # Ruta específica para Swagger UI principal de MS-Registration
+        - id: ms-registration-swagger-ui-main
           uri: lb://MS-REGISTRATION
           predicates:
-            - Path=/openapi/ms-registration/swagger-ui/**
+            - Path=/ms-registration/swagger-ui.html
           filters:
-            - RewritePath=/openapi/ms-registration/swagger-ui/(?<segment>.*), /openapi/swagger-ui/${segment}
+            - RewritePath=/ms-registration/swagger-ui.html, /swagger-ui.html
 
+        # Documento OpenAPI para MS-Registration (requerido para que Swagger UI cargue correctamente)
+        - id: ms-registration-openapi-docs
+          uri: lb://MS-REGISTRATION
+          predicates:
+            - Path=/ms-registration/v3/api-docs/**
+          filters:
+            - RewritePath=/ms-registration/v3/api-docs(?<segment>.*), /v3/api-docs${segment}
+
+        # Recursos estáticos de Swagger UI para MS-Registration
+        - id: ms-registration-swagger-static
+          uri: lb://MS-REGISTRATION
+          predicates:
+            - Path=/ms-registration/swagger-ui/**
+          filters:
+            - RewritePath=/ms-registration/swagger-ui/(?<segment>.*), /swagger-ui/${segment}
+
+        # ======================
+        # MS-NOTIFICATION
+        # ======================
+        - id: ms-notification
+          uri: lb://MS-NOTIFICATION
+          predicates:
+            - Path=/ms-notification/**
+          filters:
+            - StripPrefix=1
+
+        # Ruta específica para Swagger UI principal de MS-Notification
+        - id: ms-notification-swagger-ui-main
+          uri: lb://MS-NOTIFICATION
+          predicates:
+            - Path=/ms-notification/swagger-ui.html
+          filters:
+            - RewritePath=/ms-notification/swagger-ui.html, /swagger-ui.html
+
+        # Documento OpenAPI para MS-Notification (requerido para que Swagger UI cargue correctamente)
+        - id: ms-notification-openapi-docs
+          uri: lb://MS-NOTIFICATION
+          predicates:
+            - Path=/ms-notification/v3/api-docs/**
+          filters:
+            - RewritePath=/ms-notification/v3/api-docs(?<segment>.*), /v3/api-docs${segment}
+
+        # Recursos estáticos de Swagger UI para MS-Notification
+        - id: ms-notification-swagger-static
+          uri: lb://MS-NOTIFICATION
+          predicates:
+            - Path=/ms-notification/swagger-ui/**
+          filters:
+            - RewritePath=/ms-notification/swagger-ui/(?<segment>.*), /swagger-ui/${segment}
+
+        # ======================
+        # Rutas adicionales para compatibilidad con rutas prefijadas existentes
+        # ======================
         - id: ms-registration-openapi-docs-prefixed
           uri: lb://MS-REGISTRATION
           predicates:
             - Path=/openapi/ms-registration/v3/api-docs/**
           filters:
-            - RewritePath=/openapi/ms-registration/v3/api-docs(?<segment>/?.*), /openapi/v3/api-docs${segment}
+            - RewritePath=/openapi/ms-registration/v3/api-docs(?<segment>/?.*), /v3/api-docs${segment}
+
+        - id: ms-registration-swagger-static-prefixed
+          uri: lb://MS-REGISTRATION
+          predicates:
+            - Path=/openapi/ms-registration/swagger-ui/**
+          filters:
+            - RewritePath=/openapi/ms-registration/swagger-ui/(?<segment>.*), /swagger-ui/${segment}
+
+        - id: ms-notification-openapi-docs-prefixed
+          uri: lb://MS-NOTIFICATION
+          predicates:
+            - Path=/openapi/ms-notification/v3/api-docs/**
+          filters:
+            - RewritePath=/openapi/ms-notification/v3/api-docs(?<segment>/?.*), /v3/api-docs${segment}
+
+        - id: ms-notification-swagger-static-prefixed
+          uri: lb://MS-NOTIFICATION
+          predicates:
+            - Path=/openapi/ms-notification/swagger-ui/**
+          filters:
+            - RewritePath=/openapi/ms-notification/swagger-ui/(?<segment>.*), /swagger-ui/${segment}
 
         # ======================
-        # EUREKA WEB
+        # EUREKA
         # ======================
         - id: eureka-web-start
           uri: http://${app.eureka-server}:8761
@@ -83,28 +134,20 @@ spring:
             - Path=/eureka/**
 
         # ======================
-        # CONFIG SERVER (opcional)
+        # CONFIG SERVER
         # ======================
         - id: config-server
           uri: ${spring.cloud.config.uri}
           predicates:
             - Path=/config/**
           filters:
-            - RewritePath=/config/(?<segment>.*),/$\{segment}
-
-  security:
-    oauth2:
-      resourceserver:
-        jwt:
-          issuer-uri: http://keycloak.ucb.edu.bo:8081/realms/DemoUCB
+            - RewritePath=/config/(?<segment>.*), /{segment}
 
 management:
   endpoint:
     gateway:
       enabled: true
     health:
-      healthcheckMicroservices:
-        enabled: false
       show-details: ALWAYS
   endpoints:
     web:
