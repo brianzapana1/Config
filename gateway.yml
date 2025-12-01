@@ -4,9 +4,9 @@ server:
     enabled: true
     key-store: file:/keystore/edge-test.p12
     key-store-password: password
-    key-store-type: PKCS12          # ← solo una vez
+    key-store-type: PKCS12
     key-alias: edge-test
-    key-password: password          # ← recomendado tenerla
+    key-password: password
     trust-store: file:/keystore/edge-test.p12
     trust-store-password: password
     trust-store-type: PKCS12
@@ -16,8 +16,15 @@ spring:
     name: gateway
   cloud:
     gateway:
+
+      # 🔥🔥🔥 AGREGADO: Desactivar CORS automático del Gateway
+      globalcors:
+        add-to-simple-url-handler-mapping: false
+        corsConfigurations: {}
+
       default-filters:
         - TokenRelay
+
       routes:
         # ======================
         # MS-NOTIFICATION
