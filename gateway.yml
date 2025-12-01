@@ -92,14 +92,6 @@ spring:
           filters:
             - RewritePath=/config/(?<segment>.*),/$\{segment}
 
-spring:
-  cloud:
-    gateway:
-      globalcors:
-        add-to-simple-url-handler-mapping: false
-        corsConfigurations: {}
-
-
   security:
     oauth2:
       resourceserver:
