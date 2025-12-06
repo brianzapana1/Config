@@ -14,10 +14,11 @@ server:
 spring:
   application:
     name: gateway
+
   cloud:
     gateway:
 
-      # 🔥🔥🔥 AGREGADO: Desactivar CORS automático del Gateway
+      # 🚫 DESACTIVAR totalmente CORS interno del Gateway
       globalcors:
         add-to-simple-url-handler-mapping: false
         corsConfigurations: {}
@@ -26,6 +27,7 @@ spring:
         - TokenRelay
 
       routes:
+
         # ======================
         # MS-NOTIFICATION
         # ======================
@@ -90,14 +92,14 @@ spring:
             - Path=/eureka/**
 
         # ======================
-        # CONFIG SERVER (opcional)
+        # CONFIG SERVER
         # ======================
         - id: config-server
           uri: ${spring.cloud.config.uri}
           predicates:
             - Path=/config/**
           filters:
-            - RewritePath=/config/(?<segment>.*),/$\{segment}
+            - RewritePath=/config/(?<segment>.*),/${segment}
 
   security:
     oauth2:
