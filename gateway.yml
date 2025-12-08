@@ -75,6 +75,54 @@ spring:
             - Path=/openapi/ms-registration/v3/api-docs/**
           filters:
             - RewritePath=/openapi/ms-registration/v3/api-docs(?<segment>/?.*), /openapi/v3/api-docs${segment}
+            
+        # ======================
+        # MS-BOOK
+        # ======================
+        - id: ms-book
+          uri: lb://MS-BOOK
+          predicates:
+            - Path=/ms-book/**
+          filters:
+            - StripPrefix=1
+
+        - id: ms-book-openapi-docs-prefixed
+          uri: lb://MS-BOOK
+          predicates:
+            - Path=/openapi/ms-book/v3/api-docs/**
+          filters:
+            - RewritePath=/openapi/ms-book/v3/api-docs(?<segment>/?.*), /openapi/v3/api-docs${segment}
+
+        - id: ms-book-swagger-static-prefixed
+          uri: lb://MS-BOOK
+          predicates:
+            - Path=/openapi/ms-book/swagger-ui/**
+          filters:
+            - RewritePath=/openapi/ms-book/swagger-ui/(?<segment>.*), /openapi/swagger-ui/${segment}
+
+        # ======================
+        # MS-LOAN
+        # ======================
+        - id: ms-loan
+          uri: lb://MS-LOAN
+          predicates:
+            - Path=/ms-loan/**
+          filters:
+            - StripPrefix=1
+
+        - id: ms-loan-openapi-docs-prefixed
+          uri: lb://MS-LOAN
+          predicates:
+            - Path=/openapi/ms-loan/v3/api-docs/**
+          filters:
+            - RewritePath=/openapi/ms-loan/v3/api-docs(?<segment>/?.*), /openapi/v3/api-docs${segment}
+
+        - id: ms-loan-swagger-static-prefixed
+          uri: lb://MS-LOAN
+          predicates:
+            - Path=/openapi/ms-loan/swagger-ui/**
+          filters:
+            - RewritePath=/openapi/ms-loan/swagger-ui/(?<segment>.*), /openapi/swagger-ui/${segment}
 
         # ======================
         # EUREKA WEB
