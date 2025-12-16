@@ -31,6 +31,29 @@ spring.cloud.stream.kafka.binder:
   
 spring.cloud.stream.defaultBinder: rabbit
 
+# ======= CONFIGURACIÓN DE PRÉSTAMOS =======
+# HU-1: Días de anticipación para notificación de devolución próxima
+loan.duedate.warning.days: 3
+# HU-2: Tarifa de multa por día de retraso (en moneda local)
+loan.fine.daily.rate: 2.0
+
+# ======= COMUNICACIÓN ENTRE MICROSERVICIOS =======
+# Gateway base URL para comunicación ms-loan -> ms-book
+gateway.base-url: http://localhost:8080
+
+# ======= SPRING CLOUD STREAM BINDINGS =======
+spring.cloud.stream:
+  bindings:
+    # Output: ms-loan publica notificaciones
+    notification-out-0:
+      destination: notifications
+      content-type: application/json
+    # Input: ms-notification recibe notificaciones
+    messageProcessor-in-0:
+      destination: notifications
+      content-type: application/json
+      group: notificationGroup
+
 management.endpoint.health.show-details: "ALWAYS"
 management.endpoints.web.exposure.include: "*"
 
