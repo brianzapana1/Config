@@ -151,6 +151,18 @@ spring:
 
   security:
     oauth2:
+      client:
+        provider:
+          keycloak:
+            issuer-uri: http://keycloak.ucb.edu.bo:8081/realms/DemoUCB
+            user-name-attribute: preferred_username
+        registration:
+          gateway-client:
+            provider: keycloak
+            client-id: angular-app
+            client-secret: no-secret-needed  # Keycloak público
+            authorization-grant-type: authorization_code
+            scope: openid,profile,email
       resourceserver:
         jwt:
           issuer-uri: http://keycloak.ucb.edu.bo:8081/realms/DemoUCB
