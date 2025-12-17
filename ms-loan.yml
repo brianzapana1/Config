@@ -48,6 +48,10 @@ spring.security.oauth2.resourceserver.jwt.issuer-uri: ${SPRING_SECURITY_OAUTH2_R
 
 security:
   client-id: ${SECURITY_CLIENT_ID:gateway}
+  
+# ==================== Gateway ====================
+gateway:
+  base-url: http://localhost:8443
 
 logging:
   level:
